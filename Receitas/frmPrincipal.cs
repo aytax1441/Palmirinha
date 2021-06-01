@@ -211,6 +211,11 @@ namespace Receitas
 
         private void btnAdicionar_Click(object sender, EventArgs e)
         {
+            adicionarReceita();
+        }
+
+        private void adicionarReceita()
+        {
             int codigo;
             errorProvider1.Clear();
             try
@@ -238,9 +243,7 @@ namespace Receitas
             habilitarBotoes(false);
             adicionando = true;
             registrando = true;
-
         }
-
         private void limpaCampos()
         {
             txtCodigo.Clear();
@@ -255,19 +258,34 @@ namespace Receitas
         {
             // Verifica se todos os campos estão preenchidos
             errorProvider1.Clear();
+            bool erro = false;
             if (txtAutor.Text == "")
+            {
                 errorProvider1.SetError(txtAutor, "Preenchimento obrigatório!");
+                erro = true;
+            }
             if (txtTitulo.Text == "")
+            {
                 errorProvider1.SetError(txtTitulo, "Preenchimento obrigatório!");
+                erro = true;
+            }
             if (txtReceita.Text == "")
+            {
                 errorProvider1.SetError(txtReceita, "Preenchimento obrigatório!");
+                erro = true;
+            }
+            if (!erro)
+                salvarReceita();
+        }
 
+        private void salvarReceita()
+        {
             // Se estiver adicionando, irá inserir o registro no arquivo
             if (adicionando)
             {
                 using (StreamWriter sw = new("receitas.dat"))
                 {
-                    foreach(receitas x in listaReceitas)
+                    foreach (receitas x in listaReceitas)
                     {
                         // Substituindo a quebra de linha por um trecho que será
                         // trocado depois por Environment.NewLine
@@ -281,7 +299,7 @@ namespace Receitas
                     sw.Dispose();
                 }
                 MessageBox.Show("Registro adicionado com sucesso!", "Sucesso!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                
+
             } // Senão, irá alterar o registro escolhido
             else
             {
@@ -319,11 +337,16 @@ namespace Receitas
 
         private void btnExcluir_Click(object sender, EventArgs e)
         {
+            excluirReceita();
+        }
+
+        private void excluirReceita()
+        {
             errorProvider1.Clear();
             if (!adicionando && !registrando && txtCodigo.Text != "")
             {
                 var pergunta = MessageBox.Show("Essa ação irá excluir a receita de código " + txtCodigo.Text + "." + Environment.NewLine + Environment.NewLine + "Deseja realmente prosseguir?", "Cuidado!!", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if(pergunta == DialogResult.Yes)
+                if (pergunta == DialogResult.Yes)
                 {
                     using (StreamWriter sw = new("receitas.dat"))
                     {
@@ -350,7 +373,6 @@ namespace Receitas
                 }
             }
         }
-
         private void frmPrincipal_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (adicionando || registrando)
